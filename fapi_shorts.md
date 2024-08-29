@@ -1,4 +1,4 @@
-**Query Parameter in Fast API**
+### **Query Parameter in Fast API**
 ```
 @app.get("/items/")
 async def read_items(
@@ -17,7 +17,7 @@ async def read_items(
 ):
 ```
 
-**Path Parameter in Fast API**
+### **Path Parameter in Fast API**
 ```
 @app.get("/items/{item_id}")
 async def read_items(
@@ -41,7 +41,7 @@ async def read_items(
     size: Annotated[float, Query(gt=0, lt=10.5)],
 ):
 ```
-**Body Parameter in Fast API**
+### **Body Parameter in Fast API**
 ```
 class Item(BaseModel):
     name: str
@@ -99,7 +99,7 @@ class Item(BaseModel):
     price: float = Field(gt=0, description="The price must be greater than zero")
     tax: float | None = None
 ```
-**Body - Nested Models**
+### **Body - Nested Models**
 ```
 class Item(BaseModel):
     name: str
