@@ -94,9 +94,9 @@ from pydantic import BaseModel, Field
 class Item(BaseModel):
     name: str
     description: str | None = Field(
-        default=None, title="The description of the item", max_length=300
+        default=None, title="The description of the item", max_length=300, examples=["Foo"]
     )
-    price: float = Field(gt=0, description="The price must be greater than zero")
+    price: float = Field(gt=0, description="The price must be greater than zero", examples=["Foo"])
     tax: float | None = None
 ```
 ### **Body - Nested Models**
@@ -147,4 +147,67 @@ class Item(BaseModel):
     tax: float | None = None
     tags: set[str] = set()
     image: Image | None = None
+```
+### **Declare Request Example Data**
+```
+class Item(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    tax: float | None = None
+
+
+@app.put("/items/{item_id}")
+async def update_item(
+    *,
+    item_id: int,
+    item: Annotated[
+        Item,
+        Body(
+            examples=[
+                {
+                    "name": "Foo",
+                    "description": "A very nice Item",
+                    "price": 35.4,
+                    "tax": 3.2,
+                },
+                {
+                    "name": "Bar",
+                    "price": "35.4",
+                },
+                {
+                    "name": "Baz",
+                    "price": "thirty five point four",
+                },
+            ],
+        ),
+    ],
+):
+```
+### **Extra Data Types**
+```
+from datetime import datetime, time, timedelta
+from typing import Annotated
+from uuid import UUID
+from fastapi import Body, FastAPI
+
+@app.put("/items/{item_id}")
+async def read_items(
+    item_id: UUID,
+    start_datetime: Annotated[datetime, Body()],
+    end_datetime: Annotated[datetime, Body()],
+    process_after: Annotated[timedelta, Body()],
+    repeat_at: Annotated[time | None, Body()] = None,
+):
+    start_process = start_datetime + process_after
+    duration = end_datetime - start_process
+    return {
+        "item_id": item_id,
+        "start_datetime": start_datetime,
+        "end_datetime": end_datetime,
+        "process_after": process_after,
+        "repeat_at": repeat_at,
+        "start_process": start_process,
+        "duration": duration,
+    }
 ```
